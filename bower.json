@@ -1,6 +1,6 @@
 {
-  "name": "firebase-upload",
-  "main": "firebase-upload.html",
+  "name": "firebase-uploader",
+  "main": "firebase-uploader.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
     "polymerfire": "firebase/polymerfire#^0.9.4",

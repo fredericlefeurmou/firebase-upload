@@ -2,28 +2,28 @@
 
 <html>
   <head>
-    <title>firebase-upload test</title>
+    <title>firebase-uploader test</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../firebase-upload.html">
+    <link rel="import" href="../firebase-uploader.html">
   </head>
   <body>
 
     <test-fixture id="basic">
       <template>
-        <firebase-upload></firebase-upload>
+        <firebase-uploader></firebase-uploader>
       </template>
     </test-fixture>
 
     <script>
-      suite('firebase-upload', function() {
+      suite('firebase-uploader', function() {
 
         test('instantiating the element works', function() {
           var element = fixture('basic');
-          assert.equal(element.is, 'firebase-upload');
+          assert.equal(element.is, 'firebase-uploader');
         });
 
       });

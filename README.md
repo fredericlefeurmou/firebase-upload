@@ -1,4 +1,4 @@
-# \<firebase-upload\>
+# \<firebase-uploader\>
 
 
 
