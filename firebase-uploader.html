@@ -30,18 +30,18 @@
     </style>
 
     <paper-button raised>
-      <file-input max-files="1" on-change="_onUpload">Select a file</file-input>
+      <file-input max-files="1" on-change="_onUpload">Sélectionner un fichier</file-input>
     </paper-button>
 
-    <template is="dom-if" if="[[isUploaded]]">
-      [[file.name]]
+    <template is="dom-if" if="[[_isUploaded]]">
+      [[_file.name]]
     </template>
 
-    <template is="dom-if" if="[[isUploaded]]">
+    <template is="dom-if" if="[[_isUploaded]]">
       <paper-icon-button icon="close" on-tap="_onDelete"></paper-icon-button>
     </template>
 
-    <paper-spinner-lite active=[[isLoading]]></paper-spinner-lite>
+    <paper-spinner-lite active=[[_isLoading]]></paper-spinner-lite>
   </template>
 
   <script>
@@ -50,23 +50,25 @@
       is: 'firebase-uploader',
 
       properties: {
-        file: {
+        ref: {
+          type: String
+        },
+        _file: {
           type: Object
         },
-        isLoading: {
+        _isLoading: {
           type: Boolean
         },
-        isUploaded: {
+        _isUploaded: {
           type: Boolean
         }
       },
 
       _onUpload: function(e, detail) {
-        console.log('_onUpload');
-        this.file = detail.valid[0];
-        this.isLoading = true;
-        this.isUploaded = false;
-        const uploadTask = firebase.storage().ref('test/hello').put(this.file);
+        this._file = detail.valid[0];
+        this._isLoading = true;
+        this._isUploaded = false;
+        const uploadTask = firebase.storage().ref(this.ref).put(this._file);
 
         // Register three observers:
         // 1. 'state_changed' observer, called any time the state changes
@@ -77,29 +79,27 @@
           // See below for more detail
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
         }, (error) => {
           // Handle unsuccessful uploads
           console.error(error);
-          this.isLoading = false;
+          this._isLoading = false;
         }, () => {
           // Handle successful uploads on complete
           // For instance, get the download URL: https://firebasestorage.googleapis.com/...
           const downloadURL = uploadTask.snapshot.downloadURL;
-          console.log('downloadURL', downloadURL);
-          this.isLoading = false;
-          this.isUploaded = true;
+          this._isLoading = false;
+          this._isUploaded = true;
         });
       },
 
       _onDelete: function() {
-        this.isLoading = true;
+        this._isLoading = true;
 
-        firebase.storage().ref('test/hello').delete()
+        firebase.storage().ref(this.ref).delete()
         .then(() => {
-          this.file = undefined;
-          this.isLoading = false;
-          this.isUploaded = false;
+          this._file = undefined;
+          this._isLoading = false;
+          this._isUploaded = false;
           Polymer.dom(this.root).querySelector('file-input').reset();
         })
         .catch((err) => {
