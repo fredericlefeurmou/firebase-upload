@@ -29,15 +29,18 @@
       }
     </style>
 
+    <firebase-document
+      path="[[ref]]"
+      data="{{metadata}}">
+    </firebase-document>
+
     <paper-button raised>
       <file-input max-files="1" on-change="_onUpload">Sélectionner un fichier</file-input>
     </paper-button>
 
-    <template is="dom-if" if="[[_isUploaded]]">
-      [[_file.name]]
-    </template>
+    [[metadata.name]]
 
-    <template is="dom-if" if="[[_isUploaded]]">
+    <template is="dom-if" if="[[metadata.url]]">
       <paper-icon-button icon="close" on-tap="_onDelete"></paper-icon-button>
     </template>
 
@@ -53,22 +56,15 @@
         ref: {
           type: String
         },
-        _file: {
-          type: Object
-        },
         _isLoading: {
-          type: Boolean
-        },
-        _isUploaded: {
           type: Boolean
         }
       },
 
       _onUpload: function(e, detail) {
-        this._file = detail.valid[0];
+        const file = detail.valid[0];
         this._isLoading = true;
-        this._isUploaded = false;
-        const uploadTask = firebase.storage().ref(this.ref).put(this._file);
+        const uploadTask = firebase.storage().ref(this.ref).put(file);
 
         // Register three observers:
         // 1. 'state_changed' observer, called any time the state changes
@@ -86,9 +82,13 @@
         }, () => {
           // Handle successful uploads on complete
           // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-          const downloadURL = uploadTask.snapshot.downloadURL;
+          const metadata = uploadTask.snapshot.metadata;
+          this.metadata = {
+            fullPath: metadata.fullPath,
+            name: file.name,
+            url: metadata.downloadURLs[0]
+          };
           this._isLoading = false;
-          this._isUploaded = true;
         });
       },
 
@@ -97,15 +97,14 @@
 
         firebase.storage().ref(this.ref).delete()
         .then(() => {
-          this._file = undefined;
+          this.metadata = {};
           this._isLoading = false;
-          this._isUploaded = false;
           Polymer.dom(this.root).querySelector('file-input').reset();
         })
         .catch((err) => {
           console.error(err);
         });
-      }
+      },
 
     });
   </script>
