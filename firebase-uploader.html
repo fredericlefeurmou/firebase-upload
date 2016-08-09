@@ -82,12 +82,12 @@
         }, () => {
           // Handle successful uploads on complete
           // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-          const metadata = uploadTask.snapshot.metadata;
-          this.metadata = {
-            fullPath: metadata.fullPath,
+          const metadata = {
+            fullPath: uploadTask.snapshot.metadata.fullPath,
             name: file.name,
-            url: metadata.downloadURLs[0]
+            url: uploadTask.snapshot.metadata.downloadURLs[0]
           };
+          firebase.database().ref(this.ref).set(metadata);
           this._isLoading = false;
         });
       },
@@ -97,7 +97,7 @@
 
         firebase.storage().ref(this.ref).delete()
         .then(() => {
-          this.metadata = {};
+          firebase.database().ref(this.ref).remove();
           this._isLoading = false;
           Polymer.dom(this.root).querySelector('file-input').reset();
         })
